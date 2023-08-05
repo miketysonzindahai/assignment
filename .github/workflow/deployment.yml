@@ -1,6 +1,5 @@
 name: "Server Deployment"
 on:
-
 	push:
 
   		branches: [main]
