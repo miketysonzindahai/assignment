@@ -9,7 +9,9 @@ jobs:
      steps:
      - uses: actions/checkout@v2
      - name: Say Hello!
-       run: echo "Hello there!"
+       run: echo "Hello there!
+     - name: Run sshpass commands
+       uses: matheusvanzan/sshpass-action@v2
      - name: Deploy code to Server
        env:
         SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }} 
