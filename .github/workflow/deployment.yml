@@ -1,7 +1,8 @@
 name: "Server Deployment"
 on:
 	push:
-  		branches: [main]
+  		branches: 
+                  - main
 jobs:
 	deployment:
   	runs-on: ubuntu-latest
