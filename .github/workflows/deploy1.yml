@@ -1,10 +1,10 @@
 name: "Server Deployment"
 on:
-	push:
-  		branches: [main]
+    push:
+  	branches: [main]
 jobs:
-	deployment:
-  	runs-on: ubuntu-latest
+    deployment:
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - name: Say Hello!
