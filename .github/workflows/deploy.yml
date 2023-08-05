@@ -1,5 +1,4 @@
 name: "Server Deployment"
-
 on:
 
 	push:
