@@ -1,18 +1,23 @@
-name: Access server
-on: push
+name: Deploy on server
+on:
+ push:
+  branches:
+    — master
 jobs:
-  access_server:
-    name: Access server
+  deploy:
+    name: Deploy branch master
     runs-on: ubuntu-latest
     steps:
-      - name: Create a file
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          port: ${{ secrets.SSH_PORT }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          password: ${{ secrets.SSH_PASSWORD }}
-          script: echo hello world > hello.txt
-    env:
-        run: ssh -i ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} -p ${{ secrets.SSH_PORT }}
+    - name: Checkout and restart the server
+      uses: appleboy/ssh-action@master
+      with:
+           host: ${{ secrets.SSH_HOST }}
+           username: ${{ secrets.SSH_USERNAME }}
+           key: ${{ secrets.SSH_PRIVATE_KEY }}
+           script: |
+             cd /home/ubuntu/assignment
+             git checkout — *
+             git checkout master
+             git pull origin master
+     #        sudo kill $(ps aux | grep gunicorn | grep -v grep | awk ‘{print $2}’)
+     #        sudo /home/ubuntu//.venv/bin/gunicorn — daemon —  workers=4 mysite.wsgi:application -b 0.0.0.0:80
