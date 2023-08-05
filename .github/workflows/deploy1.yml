@@ -12,6 +12,6 @@ jobs:
        run: echo "Hello there!"
      - name: Deploy code to Server
        env:
-        SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        SSH_KEY: ${{ secrets.SSH_PUBLIC_KEY }}
        run: echo $SSH_KEY > ssh-key && chmod 400 ssh-key && ssh -i ssh-key -o StrictHostKeyChecking=no ubuntu@15.206.160.20 -p 2222 sshpass -p 'Exemplifi123@#$' "cd /var/www/html && GIT_SSH_COMMAND='ssh -i /home/ubuntu/.ssh/ssh-key' git pull origin main"
   
