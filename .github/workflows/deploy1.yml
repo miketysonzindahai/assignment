@@ -1,19 +1,14 @@
-name: "Server Deployment"
-on:
-    push:
-     branches:
-       - main
+name: Access server
+on: push
 jobs:
- deployment:
-     runs-on: ubuntu-latest
-     steps:
-     - uses: actions/checkout@v2
-     - name: Say Hello!
-       run: echo "Hello there!"
-     - name: Run sshpass commands
-       uses: matheusvanzan/sshpass-action@v2
-     - name: Deploy code to Server
-       env:
-        SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }} 
-       #run: echo $SSH_KEY | base64 --decode > ssh-key && chmod 400 ssh-key && ssh -i ssh-key -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_PORT }} sshpass -p ${{ secrets.SSH_PASSWORD }} "cd ${{ secrets.WORK_DIR }} && GIT_SSH_COMMAND='ssh -i /home/ubuntu/.ssh/ssh-key' git pull origin main"
-       run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }} && git checkout ${{ secrets.MAIN_BRANCH }} && git pull && exit"
+  access_server:
+    name: Access server
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create a file
+        uses: appleboy/ssh-action@master
+        with:
+          host: 35.154.253.216
+          username: ubuntu
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: echo hello world > hello.txt
