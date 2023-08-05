@@ -10,28 +10,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Install ssh client
-        run: sudo apt-get update && sudo apt-get install -y openssh-client
+    - name: Install dependencies (if needed)
+      run: |
+        # Add any commands to install dependencies if needed
 
-      - name: Set up SSH key
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
-
-      - name: Deploy to EC2
-        run: |
-          # Get the list of modified files in the commit
-          changed_files=$(git diff-tree --no-commit-id --name-only -r ${{ github.sha }})
-
-          # Check if index.html is in the list of changed files
-          if echo "$changed_files" | grep -q "index.html"; then
-            # Use sFTP to upload the modified files to the EC2 instance
-            sftp -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.WORK_DIR }} <<< $'put -r ./*\nbye'
-          else
-            echo "No changes to index.html. Nothing to deploy."
-          fi
+    - name: Deploy to EC2
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      run: |
+        # Only deploy if index.html has changed
+        if [ -n "$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep 'index.html')" ]; then
+          # Replace <EC2_USER>, <EC2_HOST>, and /path/to/remote/directory with appropriate values
+          scp -i ${{ secrets.SSH_PRIVATE_KEY }} index.html ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.WORK_DIR }} -p {{ secrets.SSH_PORT }} 
+          echo "index.html not changed. Skipping deployment."
+        fi
