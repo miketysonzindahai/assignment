@@ -20,4 +20,4 @@ jobs:
      - name: Deploy code to Server
        env:
         SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-       run: echo $SSH_KEY > ssh-key && chmod 600 ssh-key && ssh -vvv -i ssh-key -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} -p ${{ secrets.SSH_PORT }} sshpass -p ${{ secrets.SSH_PASSWORD }} "cd ${{ secrets.WORK_DIR }} && GIT_SSH_COMMAND='ssh -i /home/ubuntu/.ssh/ssh-key' git pull origin main"
+       run: echo $SSH_KEY > ssh-key && chmod 600 ssh-key && ssh -vvv ssh-key -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} -p ${{ secrets.SSH_PORT }} sshpass -p ${{ secrets.SSH_PASSWORD }} "cd ${{ secrets.WORK_DIR }} && GIT_SSH_COMMAND='ssh -i /home/ubuntu/.ssh/ssh-key' git pull origin main"
