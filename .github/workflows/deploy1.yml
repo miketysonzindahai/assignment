@@ -18,6 +18,6 @@ jobs:
              cd /home/ubuntu/assignment
              git checkout — *
              git checkout master
-             git pull origin master
+             git pull origin main
      #        sudo kill $(ps aux | grep gunicorn | grep -v grep | awk ‘{print $2}’)
      #        sudo /home/ubuntu//.venv/bin/gunicorn — daemon —  workers=4 mysite.wsgi:application -b 0.0.0.0:80
