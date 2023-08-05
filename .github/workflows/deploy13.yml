@@ -1,30 +1,17 @@
-name: Deploy to EC2
-on:
-  push:
-    branches:
-      - master
+name: Deploy the static file to GitHub Page
+on: [push]
 jobs:
-  deploy:
+
+  build:
+    name: Build
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: checkout
+      uses: actions/checkout@v1
 
-      - name: Install ssh client
-        run: sudo apt-get update && sudo apt-get install -y openssh-client
-
-      - name: Deploy to EC2 via sFTP
-        run: |
-          if [[ -n "$(git diff-tree --name-only HEAD^..HEAD -- index.html)" ]]; then
-            echo "Deploying index.html to EC2..."
-            echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-            chmod 600 ~/.ssh/id_rsa
-            sftp -o StrictHostKeyChecking=no -P ${SSH_PORT} ${SSH_USER}@${SSH_HOST}:{WORK_DIR} <<< $'put index.html\nexit'
-          else
-            echo "index.html not changed. Skipping deployment."
-          fi
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          SSH_USER: ${{ secrets.SSH_USER }}
-          SSH_HOST: ${{ secrets.SSH_HOST }}
-          SSH_PORT: ${{ secrets.SSH_PORT }}
+    - name: deploy docs
+      uses: ./html
+      with:
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+        remote_url: https://github.com/miketysonzindahai/assignment.git
