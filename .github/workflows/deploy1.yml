@@ -10,13 +10,13 @@ jobs:
      - uses: actions/checkout@v2
      - name: Say Hello!
        run: echo "Hello there!"
-     - name: executing remote ssh commands using password
-       uses: appleboy/ssh-action@master
-       with:
-          host: ${{ secrets.SSH_HOST }}
-          password: ${{ secrets.SSH_PASSWORD }}
-          username: ${{ secrets.SSH_USERNAME }}
-          port: ${{ secrets.SSH_PORT }}
+    # - name: executing remote ssh commands using password
+    #   uses: appleboy/ssh-action@master
+    #   with:
+    #      host: ${{ secrets.SSH_HOST }}
+    #      password: ${{ secrets.SSH_PASSWORD }}
+    #      username: ${{ secrets.SSH_USERNAME }}
+    #      port: ${{ secrets.SSH_PORT }}
      - name: Deploy code to Server
        env:
         SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
