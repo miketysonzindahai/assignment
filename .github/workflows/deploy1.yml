@@ -1,23 +1,33 @@
+name: Deploy to EC2
+
 on:
   push:
     branches:
       - main
-  workflow_dispatch:
-  
+
 jobs:
-  run_pull:
-    name: run pull
+  deploy:
     runs-on: ubuntu-latest
-  
+
     steps:
-    - name: install ssh keys
-      # check this thread to understand why its needed:
-      # https://stackoverflow.com/a/70447517
-      run: |
-        install -m 600 -D /dev/null ~/.ssh/id_rsa
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-    #    ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
-    - name: connect and pull
-      run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} -p ${{ secrets.SSH_PORT }} {{ secrets.SSH_PASSWORD }} "cd ${{ secrets.WORK_DIR }} && git checkout ${{ secrets.MAIN_BRANCH }} && git pull && exit"
-    - name: cleanup
-      run: rm -rf ~/.ssh
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install ssh client
+        run: sudo apt-get update && sudo apt-get install -y openssh-client
+
+      - name: Deploy to EC2 via sFTP
+        run: |
+          if [[ -n "$(git diff-tree --name-only HEAD^..HEAD -- index.html)" ]]; then
+            echo "Deploying index.html to EC2..."
+            echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+            chmod 600 ~/.ssh/id_rsa
+            sftp -o StrictHostKeyChecking=no -P ${SSH_PORT} ${SSH_USER}@${SSH_HOST}:{WORK_DIR} <<< $'put index.html\nexit'
+          else
+            echo "index.html not changed. Skipping deployment."
+          fi
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
