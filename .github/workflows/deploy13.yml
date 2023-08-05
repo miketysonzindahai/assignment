@@ -10,7 +10,7 @@ jobs:
       uses: actions/checkout@v1
 
     - name: deploy docs
-      uses: ./html
+      uses: ./
       with:
         username: ${{ secrets.USERNAME }}
         password: ${{ secrets.PASSWORD }}
