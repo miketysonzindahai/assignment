@@ -15,6 +15,6 @@ jobs:
      - name: Deploy code to Server
        env:
         SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }} 
-       run: echo $SSH_KEY | base64 --decode > ssh-key && chmod 400 ssh-key && ssh -i ssh-key -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_PORT }} sshpass -p ${{ secrets.SSH_PASSWORD }} "cd ${{ secrets.WORK_DIR }} && GIT_SSH_COMMAND='ssh -i /home/ubuntu/.ssh/ssh-key' git pull origin main"
+       run: "cd ${{ secrets.WORK_DIR }} && GIT_SSH_COMMAND='ssh -i /home/ubuntu/.ssh/ssh-key' git pull origin main"
      #  run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }} && git checkout ${{ secrets.MAIN_BRANCH }} && git pull && exit"
 
