@@ -1,31 +1,20 @@
-name: CI-SFTP
-# Controls when the action will run. 
+name: "Server Deployment"
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
-  push:
-    branches: [ main ]
-#  pull_request:
-#    branches: [ main ]
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+    push:
+     branches:
+       - main
 jobs:
-  # This workflow contains a single job called "SFTP"
-  deploy-via-sftp:
-    runs-on: self-hosted
-    steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
-      - name: SFTP Deploy
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.1
-        with:
-          USERNAME: ${{ secrets.SSH_USERNAME }}
-          HOST: ${{ secrets.SSH_HOST }}
-          PORT: ${{ secrets.SSH_PORT }} # custom port
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
-          # will put all file under this path
-          REPO_PATH: ${{ secrets.REPO_PATH }} # default is ./*
-          # files will copy to under remote_path
-          REMOTE_PATH: ${{ secrets.REMOTE_PATH }}
-          run: sftp $USERNAME@$HOST "GIT_SSH_COMMAND='sftp $SSH_PRIVATE_KEY' git pull origin main"
+ deployment:
+     runs-on: ubuntu-latest
+     steps:
+     - uses: actions/checkout@v2
+     - name: Say Hello!
+       run: echo "Hello there!"
+     - name: Run sshpass commands
+       uses: matheusvanzan/sshpass-action@v2
+     - name: Deploy code to Server
+       env:
+        SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }} 
+       run: echo $SSH_KEY | base64 --decode > ssh-key && chmod 400 ssh-key && ssh -i ssh-key -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_PORT }} sshpass -p ${{ secrets.SSH_PASSWORD }} "cd ${{ secrets.WORK_DIR }} && GIT_SSH_COMMAND='ssh -i /home/ubuntu/.ssh/ssh-key' git pull origin main"
+     #  run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }} && git checkout ${{ secrets.MAIN_BRANCH }} && git pull && exit"
+
