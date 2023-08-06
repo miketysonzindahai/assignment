@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: checkout
-      uses: ghcr.io/appleboy/drone-scp@1.6.10
+      uses: appleboy/scp-action@v0.0.10
     - name: copy file via ssh password
       uses: ./
       with:
