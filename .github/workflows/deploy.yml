@@ -1,84 +1,53 @@
-name: scp copy folder to remote via SSH
+name: deploy svr-prod
 
 on:
-  push
+  release:
+    types: [published]
 
 jobs:
-  build:
+  # Test
+
+  # Build
+
+  # Bump version
+  # After successful test and build, then bump version before deployment.
+  version-bump:
     runs-on: ubuntu-latest
-    env:
-      CI: true
-      LOCAL: test
+    name: Bump version
     steps:
-      - name: checkout
+      - name: Checkout
         uses: actions/checkout@v2
-      - name: Copy folder content recursively to remote
-        uses: ./
         with:
-          local: test
-          remote: scp/directory
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          password: ${{ secrets.SSH_PASSWORD }}
-          privateKey: ${{ secrets.SSH_PRIVATE_KEY}}
-      - name: Copy folder content recursively to remote (clean directory)
-        uses: ./
-        with:
-          local: test
-          remote: scp/directory
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNNAME }}
-          password: ${{ secrets.SSH_PASSWORD }}
-          privateKey: ${{ secrets.SSH_PRIVATE_KEY}}
-          rmRemote: true
-          dotfiles: true   
-      - name: Copy folder content recursively to remote (atomic put)
-        uses: ./
-        with:
-          local: test
-          remote: scp/atomic
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          password: ${{ secrets.SSH_PASSWORD }}
-          privateKey: ${{ secrets.SSH_PRIVATE_KEY}}
-          rmRemote: true
-          dotfiles: true        
-          atomicPut: true        
-      - name: Copy single file to remote
-        uses: ./
-        with:
-          local: test/oof.txt
-          remote: scp/single/readme.md
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          password: ${{ secrets.SSH_PASSWORD }}
-          privateKey: ${{ secrets.SSH_PRIVATE_KEY}}
-      - name: Copy dotfile to remote
-        uses: ./
-        with:
-          local: test/.dot.txt
-          remote: scp/single/.dot.txt
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          password: ${{ secrets.SSH_PASSWORD }}
-          privateKey: ${{ secrets.SSH_PRIVATE_KEY}}
-          dotfiles: true
-      - name: Copy with user/pw
-        uses: ./
-        with:
-          local: test/oof.txt
-          remote: scp/user/pw/oof.txt
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          password: ${{ secrets.SSH_PASSWORD }}     
-      - name: With ENV
-        uses: ./
-        with:
-          local: ${{ env.LOCAL }}
-          remote: scp/directory
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          password: ${{ secrets.SSH_PASSWORD }}
-          privateKey: ${{ secrets.SSH_PRIVATE_KEY}}
-          rmRemote: true
-          dotfiles: true    
+          ref: svr-prod
+      - name: Update version and commit
+        run: |
+          date > code/latest-release.txt
+          targetConfigFile="config/version.txt"
+          git fetch --prune --unshallow
+          oldVersion=$(awk '{print $6}' $targetConfigFile)
+          newVersion="'"$(git describe --tags --abbrev=0 --always)"'"
+          echo "Bumping..."
+          echo " Old Version = "$oldVersion
+          echo " New Version = "$newVersion
+          awk '{$6 = "'$newVersion'"; print}' $targetConfigFile > $targetConfigFile".tmp" \
+          && mv $targetConfigFile".tmp" $targetConfigFile
+          echo "Done."
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add .
+          git commit -m "Robot Commit: Auto version bump on svr-prod deploy"
+          git push
+
+  # Deploy
+#  deploy:
+#    needs: version-bump
+#    runs-on: ubuntu-22.04
+#      steps:
+#        - name: Install SSH Key
+#          uses: shimataro/ssh-key-action@v2.1.0
+#          with:
+#          key: $
+#          known_hosts: $
+#        - name: Execute deployment Script
+#    	    run: ssh username@myserver.svr-prod.com && "cd application-prod-test/$-Deploy && ./deploy.sh"
+#          run: ssh username@myserver.svr-prod.com && "cd application-prod-live/$-Deploy && ./deploy.sh"
