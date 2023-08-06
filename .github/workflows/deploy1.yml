@@ -9,7 +9,7 @@ jobs:
      runs-on: ubuntu-latest
      steps:
      - name: Checkout and restart the server
-       uses: appleboy/ssh-action@main
+       uses: shimataro/ssh-key-action@v2
        with:
            host: ${{ secrets.SSH_HOST }}
            username: ${{ secrets.SSH_USERNAME }}
