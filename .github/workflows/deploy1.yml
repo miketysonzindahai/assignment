@@ -1,29 +1,19 @@
-name: Node CI
-
-on: [push]
-
+name: "Server Deployment"
+on:
+    push:
+     branches:
+       - main
 jobs:
-  build:
-
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v3
-    - name: Install Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '16.x'
-    - name: Install npm dependencies
-      run: npm install
-    - name: Run build task
-      run: npm run build --if-present
-    - name: Deploy to Server
-      uses: easingthemes/ssh-deploy@main
-      with:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          ARGS: "-rlgoDzvc -i --delete"
-          SOURCE: "dist/"
-          REMOTE_HOST: ${{ secrets.SSH_HOST }}
-          REMOTE_USER: ${{ secrets.SSH_USERNAME }}
-          TARGET: ${{ secrets.SSH_HOST }}
-          EXCLUDE: "/dist/, /node_modules/"
+ deployment:
+     runs-on: ubuntu-latest
+     steps:
+     - uses: actions/checkout@v2
+     - name: Say Hello!
+       run: echo "Hello there!"
+     - name: Run sshpass commands
+       uses: matheusvanzan/sshpass-action@v2
+     - name: Deploy code to Server
+       env:
+        SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }} 
+       #run: echo $SSH_KEY | base64 --decode > ssh-key && chmod 400 ssh-key && ssh -i ssh-key -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_PORT }} sshpass -p ${{ secrets.SSH_PASSWORD }} "cd ${{ secrets.WORK_DIR }} && GIT_SSH_COMMAND='ssh -i /home/ubuntu/.ssh/ssh-key' git pull origin main"
+       run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }} && git checkout ${{ secrets.MAIN_BRANCH }} && git pull && exit"
