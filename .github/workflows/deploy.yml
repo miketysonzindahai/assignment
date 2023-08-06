@@ -11,7 +11,7 @@ jobs:
      - name: Say Hello!
        run: echo "Hello there!"
      - name: Run sshpass commands
-       uses: garygrossgarten/github-action-ssh@release
+       uses: garygrossgarten/github-action-ssh@v2
      - name: Deploy code to Server
        env:
         SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }} | base64 --decode > ssh-key && chmod 400 ssh-key 
