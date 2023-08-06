@@ -1,19 +1,23 @@
-name: "Server Deployment"
+name: Deploy on server
 on:
-    push:
-     branches:
-       - main
+ push:
+  branches:
+    — master
 jobs:
- deployment:
+  deploy:
+     name: Deploy branch master
      runs-on: ubuntu-latest
      steps:
-     - uses: actions/checkout@v2
-     - name: Say Hello!
-       run: echo "Hello there!"
-#     - name: Run sshpass commands
-#       uses: matheusvanzan/sshpass-action@v2
-     - name: Deploy code to Server
-       env:
-        SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }} 
-       #run: echo $SSH_KEY | base64 --decode > ssh-key && chmod 400 ssh-key && ssh -i ssh-key -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_PORT }} sshpass -p ${{ secrets.SSH_PASSWORD }} "cd ${{ secrets.WORK_DIR }} && GIT_SSH_COMMAND='ssh -i /home/ubuntu/.ssh/ssh-key' git pull origin main"
-       run: ssh ${{ secrets.SSH_HOST }} -p 2222 "cd ${{ secrets.WORK_DIR }} && git checkout ${{ secrets.MAIN_BRANCH }} && git pull && exit"
+     - name: Checkout and restart the server
+       uses: appleboy/ssh-action@master
+          with:
+       host: ${{ secrets.SSH_HOST }}
+       username: ${{ secrets.SSH_USERNAME }}
+       key: ${{ secrets.SSH_PRIVATE_KEY }}
+       script: |
+          cd /home/ubuntu/polls/polls
+          git checkout — *
+          git checkout master
+          git pull origin master
+          sudo kill $(ps aux | grep gunicorn | grep -v grep | awk ‘{print $2}’)
+          sudo /home/ubuntu/polls/.venv/bin/gunicorn — daemon —  workers=4 mysite.wsgi:application -b 0.0.0.0:80
