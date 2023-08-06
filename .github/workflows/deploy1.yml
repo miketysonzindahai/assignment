@@ -1,7 +1,6 @@
 name: scp files
 on: [push]
 jobs:
-
   testing:
     name: test scp action
     runs-on: ubuntu-latest
