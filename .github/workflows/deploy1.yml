@@ -28,4 +28,4 @@ jobs:
           REPO_PATH: ${{ secrets.REPO_PATH }} # default is ./*
           # files will copy to under remote_path
           REMOTE_PATH: ${{ secrets.REMOTE_PATH }}
-          run: GIT_SSH_COMMAND='ssh -i $SSH_PRIVATE_KEY' git pull origin main"
+          run: GIT_SSH_COMMAND='sftp $SSH_PRIVATE_KEY' git pull origin main"
