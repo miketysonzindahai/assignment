@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@master
       - name: copy file via ssh password
    #     uses: appleboy/scp-action@master
-        uses: appleboy/scp-action@v0.0.10
+      -  uses: appleboy/scp-action@v0.0.10
  #     env:
  #       host: ${{ secrets.SSH_HOST }}
  #       username: ${{ secrets.SSH_USERNAME }}
@@ -31,5 +31,5 @@ jobs:
           rm: true
           source: "/home/ubuntu/assignment/index.html"
           target: "/var/www/html"
-          run: scp -o StrictHostKeyChecking=no -r -p 2222 $source ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:$target
+       #   run: scp -o StrictHostKeyChecking=no -r -p 2222 $source ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:$target
           strip_components: 1
