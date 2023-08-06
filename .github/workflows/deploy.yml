@@ -17,3 +17,4 @@ jobs:
         port: ${{ secrets.SSH_PORT }}
         source: "index.html"
         target: "/var/www/html"
+        run: ssh -i ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} -p ${{ secrets.SSH_PORT }} "git pull && exit"
