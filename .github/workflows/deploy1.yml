@@ -16,4 +16,4 @@ jobs:
         port: ${{ secrets.SSH_PORT }}
         source: "/home/ubuntu/assignment/index.html"
         target: "/var/www/html"
-        run: scp -o StrictHostKeyChecking=no -r -p 2222 $source ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:$target
+#        run: scp -o StrictHostKeyChecking=no -r -p 2222 $source ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:$target
