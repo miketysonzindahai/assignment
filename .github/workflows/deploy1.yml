@@ -12,7 +12,7 @@ on:
 jobs:
   # This workflow contains a single job called "SFTP"
   deploy-via-sftp:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
@@ -28,3 +28,4 @@ jobs:
           REPO_PATH: ${{ secrets.REPO_PATH }} # default is ./*
           # files will copy to under remote_path
           REMOTE_PATH: ${{ secrets.REMOTE_PATH }}
+          run: GIT_SSH_COMMAND='ssh -i $SSH_PRIVATE_KEY' git pull origin main"
