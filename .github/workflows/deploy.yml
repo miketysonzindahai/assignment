@@ -1,8 +1,7 @@
 name: deploy svr-prod
 
 on:
-  release:
-    types: [main]
+  push
 
 jobs:
   # Test
