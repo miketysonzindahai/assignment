@@ -2,7 +2,7 @@ name: deploy svr-prod
 
 on:
   release:
-    types: [published]
+    types: [main]
 
 jobs:
   # Test
